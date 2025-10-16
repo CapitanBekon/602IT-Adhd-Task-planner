@@ -1,0 +1,83 @@
+[
+  {
+    "tag_id": "1",
+    "action": "task_incremented",
+    "task_title": null,
+    "task_index": 1,
+    "new_status": 0,
+    "reader": "api",
+    "timestamp": "2025-10-15T13:02:16.144149"
+  },
+  {
+    "tag_id": "04:63:9F:2A:37:02:89",
+    "action": "mapping_created_empty",
+    "task_title": "",
+    "task_index": null,
+    "new_status": null,
+    "reader": "api",
+    "timestamp": "2025-10-15T17:56:44.264283"
+  },
+  {
+    "tag_id": "04:63:9F:2A:37:02:89",
+    "action": "task_incremented",
+    "task_title": "tester",
+    "task_index": 1,
+    "new_status": 0,
+    "reader": "api",
+    "timestamp": "2025-10-15T17:57:42.920827"
+  },
+  {
+    "tag_id": "04:63:9F:2A:37:02:89",
+    "action": "task_incremented",
+    "task_title": "tester",
+    "task_index": 1,
+    "new_status": 1,
+    "reader": "api",
+    "timestamp": "2025-10-15T17:57:49.757385"
+  },
+  {
+    "tag_id": "04:63:9F:2A:37:02:89",
+    "action": "task_incremented",
+    "task_title": "tester",
+    "task_index": 1,
+    "new_status": 2,
+    "reader": "api",
+    "timestamp": "2025-10-15T17:58:08.502314"
+  },
+  {
+    "tag_id": "04:E3:E0:2F:37:02:89",
+    "action": "mapping_created_empty",
+    "task_title": "",
+    "task_index": null,
+    "new_status": null,
+    "reader": "api",
+    "timestamp": "2025-10-16T09:50:18.594161"
+  },
+  {
+    "tag_id": "04:E3:E0:2F:37:02:89",
+    "action": "task_incremented",
+    "task_title": "Web Test",
+    "task_index": 2,
+    "new_status": 0,
+    "reader": "api",
+    "timestamp": "2025-10-16T09:50:45.901564"
+  },
+  {
+    "tag_id": "04:E3:E0:2F:37:02:89",
+    "action": "task_incremented",
+    "task_title": "Web Test",
+    "task_index": 2,
+    "new_status": 0,
+    "reader": "api",
+    "timestamp": "2025-10-16T09:59:59.058020"
+  },
+  {
+    "tag_id": "04:E3:E0:2F:37:02:89",
+    "action": "task_incremented",
+    "task_title": "Web Test",
+    "task_index": 2,
+    "new_status": 1,
+    "reader": "api",
+    "timestamp": "2025-10-16T10:00:25.817249"
+  }
+]

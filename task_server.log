@@ -1,0 +1,9 @@
+nohup: ignoring input
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    from web.app import TaskPlannerServer; s=TaskPlannerServer(); s.run(host='127.0.0.1', port=5002, debug=False)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/markus/Desktop/task_planner_integrated/web/app.py", line 522
+    @self.app.route("/api/nfc/scan/debug/<path:identifier>", methods=["GET"])
+                                                                             ^
+IndentationError: unindent does not match any outer indentation level

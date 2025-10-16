@@ -1,0 +1,138 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║                  NFC TASK MANAGER - QUICK REFERENCE                  ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+📱 WHAT DOES IT DO?
+───────────────────────────────────────────────────────────────────────
+Scan an NFC tag → Task status increments → LED changes color
+                  (0→1→2→0 cycles forever)
+
+🎯 STATUS & LED COLORS
+───────────────────────────────────────────────────────────────────────
+Status 0: Not Started   → 🔴 Red LED
+Status 1: In Progress   → 🟡 Yellow LED
+Status 2: Completed     → 🟢 Green LED
+
+🚀 QUICK START
+───────────────────────────────────────────────────────────────────────
+1. Start server:    python main.py → option 6
+2. Find Pi IP:      hostname -I
+3. Test it:         python nfc_simulator.py
+4. Configure tag:   See NFC_QUICK_START.md
+
+🔧 TESTING COMMANDS
+───────────────────────────────────────────────────────────────────────
+# Interactive simulator
+python nfc_simulator.py
+
+# Quick bash test
+./test_nfc_scan.sh
+
+# Manual curl test
+curl -X POST http://localhost:5002/api/nfc/scan \
+  -H "Authorization: Bearer taskplanner2025" \
+  -H "Content-Type: application/json" \
+  -d '{"tag_id": "TEST-001", "task_title": "Water Plants"}'
+
+# Test LEDs
+python main.py --ledtest
+
+🌐 API ENDPOINTS
+───────────────────────────────────────────────────────────────────────
+POST   /api/nfc/scan              Scan NFC tag (main endpoint)
+GET    /api/nfc/mappings          View all mappings
+POST   /api/nfc/mappings          Create mapping
+DELETE /api/nfc/mappings/{id}     Remove mapping
+GET    /api/nfc/pings             View scan history
+GET    /api/nfc/stats             Usage statistics
+
+GET    /api/tasks                 List all tasks
+POST   /api/tasks                 Create task
+PUT    /api/tasks/{id}/status     Update status
+DELETE /api/tasks/{id}            Delete task
+
+📂 DATA FILES
+───────────────────────────────────────────────────────────────────────
+data/nfc_mappings.json   Tag ID → Task Title mappings
+data/nfc_pings.json      Log of all tag scans (last 1000)
+data/tasks.json          All tasks and their statuses
+
+📱 NFC TOOLS APP SETUP
+───────────────────────────────────────────────────────────────────────
+1. Install "NFC Tools" from app store
+2. Go to Tasks → Add Action → Send HTTP Request
+3. Configure:
+   URL:     http://YOUR_PI_IP:5002/api/nfc/scan
+   Method:  POST
+   Headers: Authorization: Bearer taskplanner2025
+            Content-Type: application/json
+   Body:    {"tag_id": "{tagid}", "task_title": "YOUR TASK"}
+4. Write to tag and test!
+
+🔍 MONITORING
+───────────────────────────────────────────────────────────────────────
+# Server health
+curl http://localhost:5002/api/health
+
+# Recent scans
+curl http://localhost:5002/api/nfc/pings?limit=10 \
+  -H "Authorization: Bearer taskplanner2025"
+
+# All mappings
+curl http://localhost:5002/api/nfc/mappings \
+  -H "Authorization: Bearer taskplanner2025"
+
+# All tasks
+curl http://localhost:5002/api/tasks \
+  -H "Authorization: Bearer taskplanner2025"
+
+🐛 TROUBLESHOOTING
+───────────────────────────────────────────────────────────────────────
+Server not starting:     Check port 5002 is free
+Can't reach from phone:  Check firewall, use hostname -I
+Tag not working:         Test with curl first
+LED not changing:        Run python main.py --ledtest
+Task not created:        Check server logs for errors
+
+🔐 SECURITY
+───────────────────────────────────────────────────────────────────────
+Default token: taskplanner2025
+Change it:     export TASK_AUTH_TOKEN="your-token"
+
+📚 DOCUMENTATION
+───────────────────────────────────────────────────────────────────────
+NFC_QUICK_START.md          Beginner-friendly setup guide
+NFC_INTEGRATION_GUIDE.md    Complete API documentation
+NFC_EXAMPLES.md             Example tag configurations
+IMPLEMENTATION_COMPLETE.md  Full implementation details
+README.md                   Main project documentation
+
+💡 EXAMPLE WORKFLOW
+───────────────────────────────────────────────────────────────────────
+Task: "Water Plants"
+
+1. Write tag: Use NFC Tools to configure tag
+2. Place tag: Stick near plants
+3. First scan:  Status 0 (Not Started)  → LED Red
+4. Second scan: Status 1 (In Progress)  → LED Yellow
+5. Third scan:  Status 2 (Completed)    → LED Green
+6. Fourth scan: Status 0 (cycles back)  → LED Red
+
+🎓 TIPS
+───────────────────────────────────────────────────────────────────────
+• Test with simulator before using real tags
+• Use descriptive task titles
+• One tag per task (don't reuse)
+• Check nfc_pings.json for debugging
+• Backup data/ directory regularly
+
+🆘 NEED HELP?
+───────────────────────────────────────────────────────────────────────
+1. Run: python nfc_simulator.py (test without hardware)
+2. Check: data/nfc_pings.json (see what's happening)
+3. Verify: curl http://localhost:5002/api/health
+4. Test: python main.py --ledtest (hardware check)
+
+╔══════════════════════════════════════════════════════════════════════╗
+║                    System Ready! Happy Scanning! 🎉                  ║
+╚══════════════════════════════════════════════════════════════════════╝

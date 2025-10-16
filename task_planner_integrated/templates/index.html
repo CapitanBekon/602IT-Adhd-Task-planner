@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Planner - Integrated Task Management</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            margin: 0;
+            color: #007aff;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #007aff;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .control-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .control-section h3 {
+            margin-top: 0;
+            color: #007aff;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d1d6;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        
+        .btn {
+            background: #007aff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .btn:hover {
+            background: #0056b3;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .tasks-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .task-item {
+            padding: 15px;
+            border: 1px solid #e5e5ea;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .task-info {
+            flex: 1;
+        }
+        
+        .task-title {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .task-meta {
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .task-status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            color: white;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+        
+        .status-0 { background: #ff3b30; }
+        .status-1 { background: #ff9500; }
+        .status-2 { background: #34c759; }
+        
+        .nfc-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .mapping-item {
+            padding: 10px;
+            border: 1px solid #e5e5ea;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Task Planner</h1>
+            <p>Integrated Task Management with NFC Support & Hardware Control</p>
+            <div id="connection-status" class="alert alert-error hidden">
+                Not connected to server
+            </div>
+        </div>
+
+        <div class="stats" id="stats-container">
+            <!-- Stats will be populated by JavaScript -->
+        </div>
+
+        <div class="controls">
+            <div class="control-section">
+                <h3>📝 Add New Task</h3>
+                <form id="add-task-form">
+                    <div class="form-group">
+                        <label for="task-title">Task Title</label>
+                        <input type="text" id="task-title" placeholder="Enter task title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="task-priority">Priority (0-10)</label>
+                        <input type="number" id="task-priority" min="0" max="10" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="task-effort">Effort (0-10)</label>
+                        <input type="number" id="task-effort" min="0" max="10" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="task-due">Due Date</label>
+                        <input type="date" id="task-due">
+                    </div>
+                    <button type="submit" class="btn">Add Task</button>
+                </form>
+            </div>
+
+            <div class="control-section">
+                <h3>📱 NFC Tag Scan</h3>
+                <form id="nfc-scan-form">
+                    <div class="form-group">
+                        <label for="nfc-tag-id">Tag ID</label>
+                        <input type="text" id="nfc-tag-id" placeholder="Enter NFC tag ID" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nfc-task-title">Task Title (optional)</label>
+                        <input type="text" id="nfc-task-title" placeholder="For new tasks only">
+                    </div>
+                    <button type="submit" class="btn">Scan Tag</button>
+                </form>
+            </div>
+
+            <div class="control-section">
+                <h3>⚙️ Controls</h3>
+                <div class="form-group">
+                    <label for="sort-by">Sort Tasks By</label>
+                    <select id="sort-by">
+                        <option value="priority">Priority</option>
+                        <option value="due_date">Due Date</option>
+                        <option value="status">Status</option>
+                        <option value="title">Title</option>
+                        <option value="effort">Effort</option>
+                    </select>
+                </div>
+                <button onclick="sortTasks()" class="btn">Sort Tasks</button>
+                <button onclick="refreshData()" class="btn btn-secondary">Refresh Data</button>
+                <button onclick="syncHardware()" class="btn btn-secondary">Sync Hardware</button>
+            </div>
+        </div>
+
+        <div class="tasks-section">
+            <h3>📋 Tasks</h3>
+            <div id="tasks-container">
+                <!-- Tasks will be populated by JavaScript -->
+            </div>
+        </div>
+
+    <!-- Modal for subtask choice -->
+    <div id="subtask-modal" class="hidden" style="position:fixed;left:0;top:0;right:0;bottom:0;align-items:center;justify-content:center;background:rgba(0,0,0,0.4);z-index:9999;pointer-events:auto;">
+            <div style="background:white;padding:20px;border-radius:10px;max-width:400px;width:90%;text-align:center;">
+                <p style="font-weight:600">Effort is high — create subtasks?</p>
+                <div style="display:flex;gap:10px;justify-content:center;margin-top:10px;">
+                    <button id="modal-yes" class="btn">Yes</button>
+                    <button id="modal-no" class="btn btn-secondary">No</button>
+                    <button id="modal-cancel" class="btn btn-danger">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="nfc-section">
+            <h3>🏷️ NFC Mappings</h3>
+            <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px;">
+                <button id="open-pair-modal" class="btn">Pair Tag ↔ Task</button>
+                <small style="color:#666">Pair an existing tag with a task</small>
+            </div>
+            <div id="nfc-mappings-container">
+                <!-- NFC mappings will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Modal for pairing NFC tag with task -->
+        <div id="pair-modal" class="hidden" style="position:fixed;left:0;top:0;right:0;bottom:0;align-items:center;justify-content:center;background:rgba(0,0,0,0.4);z-index:10000;pointer-events:auto;">
+            <div style="background:white;padding:20px;border-radius:10px;max-width:640px;width:95%;text-align:left;">
+                <h3 style="margin-top:0">Pair NFC Tag with Task</h3>
+                <div style="display:flex;gap:20px;">
+                    <div style="flex:1;">
+                        <label style="font-weight:600">Select Task</label>
+                        <select id="pair-task-select" style="width:100%;padding:8px;margin-top:6px;border:1px solid #d1d1d6;border-radius:6px;"></select>
+                    </div>
+                    <div style="flex:1;">
+                        <label style="font-weight:600">Select Tag</label>
+                        <select id="pair-tag-select" style="width:100%;padding:8px;margin-top:6px;border:1px solid #d1d1d6;border-radius:6px;"></select>
+                    </div>
+                </div>
+                <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:15px;">
+                    <button id="pair-cancel" class="btn btn-secondary">Cancel</button>
+                    <button id="pair-create" class="btn">Pair</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        const AUTH_TOKEN = 'taskplanner2025'; // Change this in production
+
+        // API helper function
+        async function apiRequest(endpoint, method = 'GET', data = null) {
+            const options = {
+                method,
+                headers: {
+                    'Authorization': `Bearer ${AUTH_TOKEN}`,
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            if (data) {
+                options.body = JSON.stringify(data);
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`, options);
+                return await response.json();
+            } catch (error) {
+                console.error('API request failed:', error);
+                showConnectionError();
+                throw error;
+            }
+        }
+
+        // Show/hide connection status
+        function showConnectionError() {
+            document.getElementById('connection-status').classList.remove('hidden');
+        }
+
+        function hideConnectionError() {
+            document.getElementById('connection-status').classList.add('hidden');
+        }
+
+        // Show alerts
+        function showAlert(message, type = 'success') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            
+            const container = document.querySelector('.container');
+            container.insertBefore(alertDiv, container.firstChild);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        // Load and display stats
+        async function loadStats() {
+            try {
+                const healthData = await apiRequest('/health');
+                hideConnectionError();
+                
+                const statsContainer = document.getElementById('stats-container');
+                const stats = healthData.task_stats;
+                
+                statsContainer.innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-number">${stats.total}</div>
+                        <div class="stat-label">Total Tasks</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${stats.not_started}</div>
+                        <div class="stat-label">Not Started</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${stats.in_progress}</div>
+                        <div class="stat-label">In Progress</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${stats.completed}</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${healthData.nfc_stats.total_mappings}</div>
+                        <div class="stat-label">NFC Tags</div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Failed to load stats:', error);
+            }
+        }
+
+        // Load and display tasks
+        async function loadTasks() {
+            try {
+                const data = await apiRequest('/tasks');
+                const tasksContainer = document.getElementById('tasks-container');
+                
+                if (data.tasks.length === 0) {
+                    tasksContainer.innerHTML = '<p>No tasks found. Create your first task above!</p>';
+                    return;
+                }
+                
+                tasksContainer.innerHTML = data.tasks.map(task => `
+                    <div class="task-item">
+                        <div class="task-info">
+                            <div class="task-title">${task.title}</div>
+                            <div class="task-meta">
+                                Priority: ${task.priority} | Effort: ${task.effort}
+                                ${task.due_date ? ` | Due: ${task.due_date}` : ''}
+                            </div>
+                        </div>
+                        <div>
+                            <span class="task-status status-${task.status}">
+                                ${['Not Started', 'In Progress', 'Completed'][task.status]}
+                            </span>
+                            <button onclick="updateTaskStatus(${task.id})" class="btn" style="margin-left: 10px;">
+                                Next Status
+                            </button>
+                            <button onclick="deleteTask(${task.id})" class="btn btn-danger" style="margin-left: 10px;">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Failed to load tasks:', error);
+            }
+        }
+
+        // Load and display NFC mappings
+        async function loadNFCMappings() {
+            try {
+                const data = await apiRequest('/nfc/mappings');
+                const container = document.getElementById('nfc-mappings-container');
+                
+                if (Object.keys(data.mappings).length === 0) {
+                    container.innerHTML = '<p>No NFC mappings found.</p>';
+                    return;
+                }
+                
+                container.innerHTML = Object.entries(data.mappings).map(([tagId, taskTitle]) => `
+                    <div class="mapping-item">
+                        <div>
+                            <strong>${tagId}</strong> → ${taskTitle}
+                        </div>
+                        <button onclick="deleteNFCMapping('${tagId}')" class="btn btn-danger">
+                            Remove
+                        </button>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Failed to load NFC mappings:', error);
+            }
+        }
+
+        // Add new task
+        document.getElementById('add-task-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const title = document.getElementById('task-title').value;
+            const priority = parseInt(document.getElementById('task-priority').value);
+            const effort = parseInt(document.getElementById('task-effort').value);
+            const dueDate = document.getElementById('task-due').value || null;
+            
+            try {
+                // If effort is high, show modal to choose Yes/No/Cancel
+                if (!isNaN(effort) && effort >= 5) {
+                    const choice = await askSubtaskModal();
+                    if (choice === 'cancel') {
+                        showAlert('Task creation cancelled', 'error');
+                        return;
+                    }
+
+                    // Create parent task first
+                    const created = await apiRequest('/tasks', 'POST', {
+                        title,
+                        priority,
+                        effort,
+                        due_date: dueDate
+                    });
+
+                    const parentId = created.task_index;
+
+                    if (choice === 'yes') {
+                        // Prompt in-browser for subtasks until blank or cancel
+                        while (true) {
+                            const st = prompt('Enter subtask title (leave blank to finish, enter C to cancel)');
+                            if (st === null) {
+                                // user pressed Cancel in prompt -> treat as cancel entire flow
+                                // delete parent
+                                await apiRequest(`/tasks/${parentId}`, 'DELETE');
+                                showAlert('Task creation cancelled', 'error');
+                                return;
+                            }
+                            const trimmed = (st || '').trim();
+                            if (!trimmed) break;
+                            if (trimmed.toLowerCase().startsWith('c')) {
+                                // Cancel
+                                await apiRequest(`/tasks/${parentId}`, 'DELETE');
+                                showAlert('Task creation cancelled', 'error');
+                                return;
+                            }
+                            // Add subtask via API
+                            await apiRequest(`/tasks/${parentId}/subtasks`, 'POST', { title: trimmed });
+                        }
+                    }
+
+                    showAlert('Task created successfully!');
+                    document.getElementById('add-task-form').reset();
+                    refreshData();
+                    return;
+                }
+
+                // Normal creation (effort < 5)
+                await apiRequest('/tasks', 'POST', {
+                    title,
+                    priority,
+                    effort,
+                    due_date: dueDate
+                });
+
+                showAlert('Task created successfully!');
+                document.getElementById('add-task-form').reset();
+                refreshData();
+            } catch (error) {
+                showAlert('Failed to create task', 'error');
+            }
+        });
+
+        // Modal helper
+        function askSubtaskModal() {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('subtask-modal');
+                // ensure modal is visible using inline style to override .hidden
+                modal.style.display = 'flex';
+                modal.classList.remove('hidden');
+
+                // Query buttons after making modal visible to ensure they are present
+                const yes = document.getElementById('modal-yes');
+                const no = document.getElementById('modal-no');
+                const cancel = document.getElementById('modal-cancel');
+
+                function cleanup() {
+                    // hide via inline style and keep the 'hidden' class
+                    modal.style.display = 'none';
+                    modal.classList.add('hidden');
+                    yes.removeEventListener('click', onYes);
+                    no.removeEventListener('click', onNo);
+                    cancel.removeEventListener('click', onCancel);
+                }
+
+                function onYes() { cleanup(); resolve('yes'); }
+                function onNo() { cleanup(); resolve('no'); }
+                function onCancel() { cleanup(); resolve('cancel'); }
+
+                yes.addEventListener('click', onYes);
+                no.addEventListener('click', onNo);
+                cancel.addEventListener('click', onCancel);
+            });
+        }
+
+        // NFC scan
+        document.getElementById('nfc-scan-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const tagId = document.getElementById('nfc-tag-id').value;
+            const taskTitle = document.getElementById('nfc-task-title').value || null;
+            
+            try {
+                const result = await apiRequest('/nfc/scan', 'POST', {
+                    tag_id: tagId,
+                    task_title: taskTitle,
+                    reader: 'web_interface'
+                });
+                
+                showAlert(`NFC scan successful: ${result.status}`);
+                document.getElementById('nfc-scan-form').reset();
+                refreshData();
+            } catch (error) {
+                showAlert('NFC scan failed', 'error');
+            }
+        });
+
+        // Update task status
+        async function updateTaskStatus(taskId) {
+            try {
+                // Send empty object so Flask sees valid JSON, but server also tolerates no body
+                const result = await apiRequest(`/tasks/${taskId}/status`, 'PUT', {});
+                showAlert(`Task status updated to: ${result.status_name}`);
+                refreshData();
+            } catch (error) {
+                showAlert('Failed to update task status', 'error');
+            }
+        }
+
+        // Delete task
+        async function deleteTask(taskId) {
+            if (!confirm('Are you sure you want to delete this task?')) return;
+            
+            try {
+                await apiRequest(`/tasks/${taskId}`, 'DELETE');
+                showAlert('Task deleted successfully');
+                refreshData();
+            } catch (error) {
+                showAlert('Failed to delete task', 'error');
+            }
+        }
+
+        // Sort tasks
+        async function sortTasks() {
+            const sortBy = document.getElementById('sort-by').value;
+            
+            try {
+                await apiRequest('/tasks/sort', 'POST', { sort_by: sortBy });
+                showAlert(`Tasks sorted by ${sortBy}`);
+                refreshData();
+            } catch (error) {
+                showAlert('Failed to sort tasks', 'error');
+            }
+        }
+
+        // Delete NFC mapping
+        async function deleteNFCMapping(tagId) {
+            if (!confirm('Are you sure you want to remove this NFC mapping?')) return;
+            
+            try {
+                await apiRequest(`/nfc/mappings/${tagId}`, 'DELETE');
+                showAlert('NFC mapping removed');
+                refreshData();
+            } catch (error) {
+                showAlert('Failed to remove NFC mapping', 'error');
+            }
+        }
+
+        // Sync hardware
+        async function syncHardware() {
+            try {
+                await apiRequest('/hardware/sync', 'POST');
+                showAlert('Hardware synced successfully');
+            } catch (error) {
+                showAlert('Failed to sync hardware (feature may not be available)', 'error');
+            }
+        }
+
+        // Refresh all data
+        async function refreshData() {
+            await Promise.all([
+                loadStats(),
+                loadTasks(),
+                loadNFCMappings()
+            ]);
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            // Ensure modal is hidden on load (defensive guard)
+            const modal = document.getElementById('subtask-modal');
+            if (modal) {
+                modal.style.display = 'none';
+                modal.classList.add('hidden');
+            }
+
+            refreshData();
+
+            // Auto-refresh every 30 seconds
+            setInterval(refreshData, 30000);
+        });
+
+        // Pairing modal logic
+        document.getElementById('open-pair-modal').addEventListener('click', async () => {
+            try {
+                // populate tasks
+                const tasksResp = await apiRequest('/tasks');
+                const tasks = tasksResp.tasks || [];
+                const taskSelect = document.getElementById('pair-task-select');
+                taskSelect.innerHTML = '<option value="">-- select a task --</option>' + tasks.map(t => `<option value="${t.id}">${t.id} - ${t.title}</option>`).join('');
+
+                // populate tags
+                const tagsResp = await apiRequest('/nfc/mappings');
+                const mappings = tagsResp.mappings || {};
+                const tagSelect = document.getElementById('pair-tag-select');
+                // show unmapped tags and mapped tags
+                tagSelect.innerHTML = '<option value="">-- select a tag --</option>' + Object.keys(mappings).map(k => `<option value="${k}">${k} ${mappings[k] && mappings[k].title ? '→ ' + mappings[k].title : ''}</option>`).join('');
+
+                // show modal
+                const pm = document.getElementById('pair-modal');
+                pm.style.display = 'flex';
+                pm.classList.remove('hidden');
+            } catch (err) {
+                showAlert('Failed to open pair modal', 'error');
+            }
+        });
+
+        document.getElementById('pair-cancel').addEventListener('click', () => {
+            const pm = document.getElementById('pair-modal');
+            pm.style.display = 'none';
+            pm.classList.add('hidden');
+        });
+
+        document.getElementById('pair-create').addEventListener('click', async () => {
+            const taskSelect = document.getElementById('pair-task-select');
+            const tagSelect = document.getElementById('pair-tag-select');
+            const taskId = taskSelect.value;
+            const tagId = tagSelect.value;
+
+            if (!taskId || !tagId) {
+                showAlert('Please select both a task and a tag', 'error');
+                return;
+            }
+
+            try {
+                // get task title for the given task id
+                const taskResp = await apiRequest(`/tasks/${taskId}`);
+                const taskTitle = taskResp.task && taskResp.task.title;
+
+                await apiRequest('/nfc/mappings', 'POST', { tag_id: tagId, task_title: taskTitle });
+                showAlert('Tag paired successfully');
+                document.getElementById('pair-modal').style.display = 'none';
+                document.getElementById('pair-modal').classList.add('hidden');
+                refreshData();
+            } catch (err) {
+                showAlert('Failed to create mapping', 'error');
+            }
+        });
+    </script>
+</body>
+</html>
